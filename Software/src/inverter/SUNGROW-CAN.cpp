@@ -10,6 +10,7 @@ void SungrowInverter::
     update_values() {  //This function maps all the values fetched from battery CAN to the inverter CAN messages
 
   //Maxvoltage (eg 400.0V = 4000 , 16bits long)
+    if (datalayer.battery.status.voltage_dV = 0) { datalayer.battery.status.voltage_dV = 800 } // 80v avoids sungrow error - 703 Battery undervoltage
   SUNGROW_701.data.u8[0] = (datalayer.battery.info.max_design_voltage_dV & 0x00FF);
   SUNGROW_701.data.u8[1] = (datalayer.battery.info.max_design_voltage_dV >> 8);
   //Minvoltage (eg 300.0V = 3000 , 16bits long)
