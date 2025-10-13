@@ -618,14 +618,16 @@ void BmwPhevBattery::transmit_can(unsigned long currentMillis) {
   if (currentMillis - previousMillis20 >= INTERVAL_20_MS) {
     previousMillis20 = currentMillis;
 
-    if (startup_counter_contactor < 160) {
-      startup_counter_contactor++;
-    } else {                      //After 160 messages, turn on the request
-      BMW_10B.data.u8[1] = 0x10;  // Close contactors
-    }
-
-    BMW_10B.data.u8[1] = ((BMW_10B.data.u8[1] & 0xF0) + alive_counter_20ms);
-    BMW_10B.data.u8[0] = calculateCRC(BMW_10B, 3, 0x3F);
+    if (startup_counter_contactor < 160) { // After 160 messages, turn on the request
+      startup_counter_contactor++; }
+    else if ((startup_counter_contactor > 160) && (startup_counter_contactor < 170)) {
+      BMW_10B.data.u8[1] = 0x10; } // Close contactors
+    else if ((startup_counter_contactor > 180) && (startup_counter_contactor < 190)) {
+      BMW_10B.data.u8[1] = 0x62; } // 2nd send of 10b, change this value to target contactor close, good guess 1,2,4,8,0x20,0x40,0x50
+    else {  
+    BMW_10B.data.u8[1] = ((BMW_10B.data.u8[1] & 0xF0) + alive_counter_20ms); }
+    
+    BMW_10B.data.u8[0] = calculateCRC(BMW_10B, 3, 0x3F); // correct crc in all cases
 
     alive_counter_20ms = increment_alive_counter(alive_counter_20ms);
 
